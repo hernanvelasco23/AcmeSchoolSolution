@@ -1,28 +1,62 @@
+# ACME School Course Management System
 
-This project is a proof of concept (PoC) for managing student enrollments in courses at ACMESchool. It allows:
+This project is a course management system for ACME School, designed to handle student registrations, course management, and payment processing. The implementation is in C# and is structured to allow for easy maintenance and potential future enhancements.
 
-Registering students (adults only). Registering courses. Enrolling students in courses after paymen. Retrieving a list of courses and their enrolled students based on a specified date range. The implementation is focused on creating a clean and scalable design with abstractions that will allow the system to evolve, integrating a real payment gateway and a database in the future.
+## Features
 
-Design Choices Domain-Driven Design The system models students, courses, and payments as part of the domain. Key domain classes include Student, Course, Money, and CoursePeriod. These encapsulate the core business logic.
+- Students can be registered by providing their name and age (only adults can register).
+- Courses can be created with a name, registration fee, start and end dates, and a maximum number of students.
+- Students can enroll in courses after paying the registration fee through a payment gateway.
+- Retrieve a list of courses along with their enrolled students within a specified date range.
 
-Abstraction of Services The IPaymentGateway interface abstracts the payment process, allowing flexibility to swap the current mock implementation (PaymentGateway) with a real-world integration like Stripe or PayPal later.
+## Project Structure
 
-The EnrollmentPolicy abstracts business rules, making the system adaptable to new rules in the future without modifying the enrollment service directly.
+- **EnrollmentStrategy**
+  - EnrollmentPolicyStrategy: Implements the logic for enrollment policies.
+  - IEnrollmentStrategy: Interface for enrollment strategies.
+  - PaymentStrategy: Implements payment processing strategies.
+- EnrollmentPolicy: Contains rules for student enrollment.
+- EnrollmentService: Handles enrollment logic and interacts with strategies.
+- IPaymentGateway: Defines the interface for payment gateway implementations.
+- PaymentGateway: Implements the payment processing logic.
+- Course: Represents a course with properties such as name, registration fee, and enrolled students.
+- Student: Represents a student with properties like name and age.
 
-Clean Architecture We have divided the project into layers:
+## Design Choices
 
-Domain: Contains business logic and domain models. Application: Contains the logic for enrolling students, payment processing, and enforcing business rules. Repositories: Abstracts data storage for students and courses. Currently, we use in-memory repositories, but these can be replaced with database-backed implementations later. Considerations for Future Development
+1. **Strategy Pattern**: 
+   - The strategy pattern is used to encapsulate various enrollment policies and payment processing methods. This design allows for flexibility and easy extension of the enrollment rules and payment methods without modifying the core logic of the EnrollmentService.
 
-Things I Would Have Liked to Do Persistence Layer: We have not integrated a database since it wasn't required for the PoC. In the future, adding database support with an ORM like Entity Framework would be necessary to persist students, courses, and enrollments. Real Payment Gateway Integration: The current implementation uses a mock payment gateway for simplicity. Later, we can integrate with real payment services
+2. **ReadOnly Collections**: 
+   - The EnrolledStudents property is exposed as a read-only collection (IReadOnlyCollection<Student>) to prevent external modification of the internal list of enrolled students, maintaining the integrity of the course data.
 
-Things That Could Be Improved
+3. **Validation**: 
+   - Age validation is performed to ensure only adults can register. This logic is handled within the EnrollmentPolicyStrategy.
 
-Validation of Enrollment Process: The enrollment process currently assumes simple rules. It could be enhanced by adding support for other business rules, such as prerequisites for courses, limits on the number of enrollments per course, or discounts for certain students.
+4. **Exception Handling**: 
+   - Proper exception handling is implemented to manage scenarios such as enrolling a student in a full course or failing payment.
 
-User Interface: There is no user interface as of now. In the future, we could build a web-based API using ASP.NET Core and a front-end for students to interact with the system.
+## Testing
 
-Asynchronous Payment Processing: We could introduce asynchronous payment processing to handle situations where payments are pending or fail due to external issues. Third-Party Libraries Currently, the only external library used is Moq for unit testing. I chose Moq because it is lightweight and easy to use for mocking dependencies in unit tests.
+The project includes an xUnit test project that automatically runs tests without requiring manual intervention. The tests cover:
 
-In the future, we would likely use libraries such as:
+- Valid student registration and course enrollment.
+- Exception handling for underage students and failed payments.
+- Validating the maximum capacity of courses.
+- Ensuring that the properties of the Course and Student classes are correctly initialized.
 
-Entity Framework: For database access and persistence. FluentValidation: For handling more complex validation rules. Payment Gateway SDKs: Depending on the payment service chosen (e.g., Stripe, PayPal, etc.). Time Invested and Research I invested approximately 8 hours in this project.
+### Things I Would Like to Improve
+
+- **Database Integration**: Future work should include integrating a database to persist course and student information.
+- **API Development**: Once the proof of concept is validated, developing a Web API for easier access to course management functionality should be prioritized.
+
+### Third-Party Libraries Used
+
+- **xUnit**: Used for testing the application logic.
+- **Moq**: Used for creating mock objects in tests, allowing for better isolation of the tests.
+
+
+
+I have invested approximately 6 hours in developing this project. Research was necessary for implementing the strategy pattern effectively, as well as understanding how to best handle money and course management concepts in C#. The use of IReadOnlyCollection was new to me.
+
+
