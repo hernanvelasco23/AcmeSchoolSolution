@@ -5,10 +5,10 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace AcmeSchool.Application
+namespace AcmeSchool.Application.Enrollment.Strategy
 {
-    public interface IPaymentGateway
+    public interface IEnrollmentStrategy
     {
-        bool ProcessPayment(Money amount);
+        void Execute(Student student, Course course);
     }
 }

@@ -15,7 +15,7 @@ namespace AcmeSchool.Domain
         {
             Name = name;
             Age = age;
-            StudentId = Guid.NewGuid(); // Unique student identifier
+            StudentId = Guid.NewGuid();
         }
         public void UpdateDetails(string name, int age)
         {

@@ -18,7 +18,7 @@ namespace AcmeSchool.Domain
 
         public Course(string name, Money registrationFee, CoursePeriod period, int maximumStudents = 30)
         {
-            CourseId = Guid.NewGuid(); // Assign a unique ID to the course
+            CourseId = Guid.NewGuid();
             Name = name;
             RegistrationFee = registrationFee;
             Period = period;
@@ -28,6 +28,9 @@ namespace AcmeSchool.Domain
 
         public void AddStudent(Student student)
         {
+            if (student == null)
+                throw new ArgumentNullException(nameof(student), "Student cannot be null.");
+
             if (_enrolledStudents.Count >= MaximumStudents)
                 throw new InvalidOperationException("Course is full.");
 
